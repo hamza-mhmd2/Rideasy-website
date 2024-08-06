@@ -1,0 +1,56 @@
+/* MapWithSearch.css */
+
+.container {
+  display: flex;
+  flex-direction: row; /* Layout children side by side */
+  justify-content: space-between; /* Space between left and right sections */
+}
+
+.map-wrapper {
+  flex: 2; /* Adjusts the map width to take up more space */
+  height: 500px; /* Adjust the height as needed */
+  position: relative;
+}
+
+.search-controls-wrapper {
+  flex: 1; /* Adjusts the width of the search controls area */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
+}
+
+.search-control {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px; /* Space between multiple search controls */
+}
+
+.search-input {
+  padding: 5px;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.search-button {
+    z-index: 1000;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+.info-container {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #ddd;
+}
