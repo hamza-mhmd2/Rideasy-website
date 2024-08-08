@@ -1,3 +1,10 @@
+## For Testing purpose Integrated Leaflet Map:
+=> For each 1 km the price is set to 150PKR <br>
+=>calculates the total distance between PickupPoint and destinationPoint <br>
+![image](https://github.com/user-attachments/assets/00ce9e85-5e26-41a2-92c7-bdf82daa25b9)
+<br>
+![image](https://github.com/user-attachments/assets/dabbb0eb-0d3a-4f2b-a7cb-ad0262dea857)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
