@@ -12,7 +12,9 @@ function Register() {
       make: "",
       model: "",
       year: "",
-      licensePlate: ""
+      licensePlate: "",
+      Type: "",
+      seats_in_vehicle: 0
     }
   });
 
@@ -111,6 +113,20 @@ function Register() {
             value={userData.vehicle.licensePlate}
             onChange={handleChange}
             placeholder="Vehicle License Plate"
+          />
+          <input
+            type="text"
+            name="vehicle.Type"
+            value={userData.vehicle.Type}
+            onChange={handleChange}
+            placeholder="Vehicle Type"
+          />
+          <input
+            type="number"
+            name="vehicle.seats_in_vehicle"
+            value={userData.vehicle.seats_in_vehicle}
+            onChange={handleChange}
+            placeholder="Vehicle seats"
           />
         </div>
       )}

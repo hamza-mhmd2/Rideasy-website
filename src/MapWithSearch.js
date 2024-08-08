@@ -1,22 +1,23 @@
+// MapWithSearch.js
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet'; // Import Leaflet to access the icon class
-import './MapWithSearch.css'; // Ensure this path is correct
+import L from 'leaflet'; 
+import axios from 'axios';
+import './MapWithSearch.css';
 
-// Define custom icons
 const pickupIcon = new L.Icon({
-  iconUrl: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png', // URL to your custom pickup icon
-  iconSize: [32, 32], // Size of the icon
-  iconAnchor: [16, 32], // Anchor position
-  popupAnchor: [0, -32] // Popup position
+  iconUrl: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32]
 });
 
 const destinationIcon = new L.Icon({
-  iconUrl: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png', // URL to your custom destination icon
-  iconSize: [32, 32], // Size of the icon
-  iconAnchor: [16, 32], // Anchor position
-  popupAnchor: [0, -32] // Popup position
+  iconUrl: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32]
 });
 
 const SearchControl = ({ onResult, placeholder, type }) => {
@@ -59,15 +60,11 @@ const MapWithSearch = () => {
   const [departureTime, setDepartureTime] = useState('');
   const [availableSeats, setAvailableSeats] = useState(0);
 
-  const [rideData, setRideData] = useState({
-    
-  });
-
   const calculateDistance = (latlng1, latlng2) => {
     const [lat1, lon1] = latlng1;
     const [lat2, lon2] = latlng2;
 
-    const R = 6371; // Radius of the Earth in km
+    const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
 
@@ -76,7 +73,7 @@ const MapWithSearch = () => {
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in km
+    return R * c;
   };
 
   const handleResult = (position, display_name, type) => {
@@ -86,11 +83,10 @@ const MapWithSearch = () => {
       setDestination(position);
     }
 
-    // Optionally, recalculate when results are updated
     if (pickup && destination && showResults) {
       const dist = calculateDistance(pickup, destination);
       setDistance(dist);
-      setPrice(dist * 150); // Assuming 150 PKR per km
+      setPrice(dist * 150);
     }
   };
 
@@ -98,35 +94,32 @@ const MapWithSearch = () => {
     if (pickup && destination && departureTime && availableSeats > 0) {
       const dist = calculateDistance(pickup, destination);
       setDistance(dist);
-      setPrice(dist * 150); // Assuming 150 PKR per km
+      setPrice(dist * 150);
       setShowResults(true);
-  
-      // Send ride details to the backend
+
       try {
-        const response = await fetch('http://localhost:8000/api/v1/rides/create', { // Updated endpoint
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await axios.post('http://localhost:8000/api/v1/rides/create', {
+          driver: "66b35c8030aefc74054f3d50", // Replace with an actual ObjectId for a driver
+          passengers: [
+          "66b09fed3fd1882ca201fec0" // Replace with actual ObjectIds for passengers
+        ],
+          origin: {
+            address: 'Pickup Location',
+            coordinates: pickup,
           },
-          body: JSON.stringify({
-            origin: {
-              address: 'Pickup Location', // Replace with actual address
-              coordinates: pickup,
-            },
-            destination: {
-              address: 'Destination Location', // Replace with actual address
-              coordinates: destination,
-            },
-            departureTime,
-            availableSeats,
-            pricePerSeat: price / distance, // Calculated price per seat
-          }),
+          destination: {
+            address: 'Destination Location',
+            coordinates: destination,
+          },
+          departureTime,
+          availableSeats,
+          pricePerSeat: price / distance,
         });
-        const data = await response.json();
-        if (response.ok) {
+
+        if (response.status === 201) {
           alert('Ride created successfully');
         } else {
-          alert(`Failed to create ride: ${data.error}`);
+          alert(`Failed to create ride: ${response.data.error}`);
         }
       } catch (error) {
         console.error('Error creating ride:', error);
@@ -136,9 +129,8 @@ const MapWithSearch = () => {
       alert('Please provide all necessary details');
     }
   };
-  
 
-  const position = [31.5204, 74.3587]; // Default position (Lahore, Pakistan)
+  const position = [31.5204, 74.3587];
 
   return (
     <div>
