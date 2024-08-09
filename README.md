@@ -1,9 +1,17 @@
-## For Testing purpose Integrated Leaflet Map:
-=> For each 1 km the price is set to 150PKR <br>
-=>calculates the total distance between PickupPoint and destinationPoint <br>
-![image](https://github.com/user-attachments/assets/00ce9e85-5e26-41a2-92c7-bdf82daa25b9)
+## Register Page:
+![image](https://github.com/user-attachments/assets/44bcb4e6-f691-4ea5-86ac-e922416502b8)
 <br>
-![image](https://github.com/user-attachments/assets/dabbb0eb-0d3a-4f2b-a7cb-ad0262dea857)
+=> Fill the required Credentials
+## Login Page:
+![image](https://github.com/user-attachments/assets/227af38a-6869-406a-b67c-be2d54f95705)
+<br>
+=>Upon sucessfull authentication, user will be redirected to his page for booking. The booking page is the private Route so only authenticated users can access it<br>
+## Booking Ride Page:
+![image](https://github.com/user-attachments/assets/f1500f3e-6b36-4029-85aa-62e5d97e9c29)
+<br>
+=> In this Page, user is required to fill the ride details and select a driver by clciking the 'Show All Drivers' Button to select a driver by "book' button. upon selecting driver and filling the ride detials, click on 'Calculate Ride', This will calculate the ride cost as well as Book the ride and stores in database.<br>
+![image](https://github.com/user-attachments/assets/a9958e73-4d8c-44e6-a0c7-81f43290a4c3) <br>
+![image](https://github.com/user-attachments/assets/4638828f-933e-49ce-b51c-8598e72653af)
 
 # Getting Started with Create React App
 
