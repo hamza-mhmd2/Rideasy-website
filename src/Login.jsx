@@ -26,6 +26,10 @@ function Login() {
 
       // Store the JWT token in local storage
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('fullName', response.data.user.fullName);
+      localStorage.setItem('id', response.data.user.id);
+      console.log(response.data.user.fullName)
+      console.log(response.data.user.id)
 
       // Redirect to the map searcher page
       navigate('/map');

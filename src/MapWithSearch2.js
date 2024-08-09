@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import './MapWithSearch.css';
-import DriversPopup from './DriversPopup'; // Correct casing
-
-const logout = () => {
+import L from 'leaflet'; // Import Leaflet to access the icon class
+import './MapWithSearch.css'; // Ensure this path is correct
+ 
+ 
+  const logout = () => {
   localStorage.removeItem('token'); // Remove the token from local storage
   window.location.href = '/login'; // Redirect to login page
 };
 
 // Define custom icons
 const pickupIcon = new L.Icon({
-  iconUrl: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
+  iconUrl: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png', // URL to your custom pickup icon
+  iconSize: [32, 32], // Size of the icon
+  iconAnchor: [16, 32], // Anchor position
+  popupAnchor: [0, -32] // Popup position
 });
 
 const destinationIcon = new L.Icon({
-  iconUrl: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
+  iconUrl: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png', // URL to your custom destination icon
+  iconSize: [32, 32], // Size of the icon
+  iconAnchor: [16, 32], // Anchor position
+  popupAnchor: [0, -32] // Popup position
 });
 
 const SearchControl = ({ onResult, placeholder, type }) => {
@@ -64,25 +64,10 @@ const MapWithSearch = () => {
   const [showResults, setShowResults] = useState(false);
   const [departureTime, setDepartureTime] = useState('');
   const [availableSeats, setAvailableSeats] = useState(0);
-  const [showDriversPopup, setShowDriversPopup] = useState(false); // State to control popup visibility
-  const [selectedDriver, setSelectedDriver] = useState(''); // State to store selected driver ID
 
-  const [fullName, setFullName] = useState('');
-  const [id, setId] = useState('');
-
-  useEffect(() => {
-    const storedName = localStorage.getItem('fullName');
-    if (storedName) {
-      setFullName(storedName);
-    }
-  }, []);
-
-  useEffect(() => {
-    const storedId = localStorage.getItem('id');
-    if (storedId) {
-      setId(storedId);
-    }
-  }, []);
+  const [rideData, setRideData] = useState({
+    
+  });
 
   const calculateDistance = (latlng1, latlng2) => {
     const [lat1, lon1] = latlng1;
@@ -107,6 +92,7 @@ const MapWithSearch = () => {
       setDestination(position);
     }
 
+    // Optionally, recalculate when results are updated
     if (pickup && destination && showResults) {
       const dist = calculateDistance(pickup, destination);
       setDistance(dist);
@@ -115,21 +101,20 @@ const MapWithSearch = () => {
   };
 
   const calculateRide = async () => {
-    if (pickup && destination && departureTime && availableSeats > 0 && selectedDriver) {
+    if (pickup && destination && departureTime && availableSeats > 0) {
       const dist = calculateDistance(pickup, destination);
       setDistance(dist);
       setPrice(dist * 150); // Assuming 150 PKR per km
       setShowResults(true);
-
+  
+      // Send ride details to the backend
       try {
-        const response = await fetch('http://localhost:8000/api/v1/rides/create', {
+        const response = await fetch('http://localhost:8080/api/v1/rides/create', { // Updated endpoint
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            driver: selectedDriver,
-            passengers: [id],
             origin: {
               address: 'Pickup Location', // Replace with actual address
               coordinates: pickup,
@@ -157,17 +142,12 @@ const MapWithSearch = () => {
       alert('Please provide all necessary details');
     }
   };
-
-  const handleBookDriver = (driverId) => {
-    setSelectedDriver(driverId);
-    setShowDriversPopup(false); // Optionally close the popup after booking
-  };
+  
 
   const position = [31.5204, 74.3587]; // Default position (Lahore, Pakistan)
 
   return (
     <div>
-      <h2>Welcome {fullName}</h2>
       <MapContainer center={position} zoom={13} style={{ height: '500px', width: '100%' }}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -200,11 +180,7 @@ const MapWithSearch = () => {
         <p>Distance: {distance.toFixed(2)} km</p>
         <p>Price: {price.toFixed(2)} PKR</p>
       </div>}
-      <button onClick={() => setShowDriversPopup(true)} >Show All Drivers</button>
       <button onClick={logout} className="logout-button">Logout</button>
-
-      {/* Render the DriversPopup if showDriversPopup is true */}
-      {showDriversPopup && <DriversPopup onClose={() => setShowDriversPopup(false)} onBookDriver={handleBookDriver} />}
     </div>
   );
 };
