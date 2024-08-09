@@ -11,7 +11,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-leaflet": "^4.2.1",
-    "react-leaflet-search": "^2.0.1",
     "react-router-dom": "^6.26.0",
     "react-scripts": "5.0.1",
     "textflow.js": "^0.1.4",
