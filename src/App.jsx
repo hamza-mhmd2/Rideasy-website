@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Register from './Register';
 import MapWithSearch from './MapWithSearch'; // Import the MapWithSearch component
-import Login from "./Login"
+import Login from "./Login";
+import RideHistory from './RideHistory';
 import PrivateRoute from './privateRouter'; 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
          
           <Route path="/" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/history" element={<RideHistory />} />
           <Route
           path="/map"
           element={

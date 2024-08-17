@@ -5,12 +5,7 @@ import L from 'leaflet';
 import './MapWithSearch.css';
 import DriversPopup from './DriversPopup'; // Correct casing
 
-const logout = () => {
-  localStorage.removeItem('token'); // Remove the token from local storage
-  window.location.href = '/login'; // Redirect to login page
-};
-
-// Define custom icons
+// Custom icons
 const pickupIcon = new L.Icon({
   iconUrl: 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png',
   iconSize: [32, 32],
@@ -63,9 +58,10 @@ const MapWithSearch = () => {
   const [price, setPrice] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [departureTime, setDepartureTime] = useState('');
-  const [availableSeats, setAvailableSeats] = useState(0);
-  const [showDriversPopup, setShowDriversPopup] = useState(false); // State to control popup visibility
-  const [selectedDriver, setSelectedDriver] = useState(''); // State to store selected driver ID
+  const [bookedSeats, setBookedSeats] = useState(0);
+  const [showDriversPopup, setShowDriversPopup] = useState(false); // Popup visibility state
+  const [selectedDriver, setSelectedDriver] = useState(''); // Selected driver ID state
+  const [passengerGenders, setPassengerGenders] = useState([]); // State to store passenger genders
 
   const [fullName, setFullName] = useState('');
   const [id, setId] = useState('');
@@ -114,11 +110,39 @@ const MapWithSearch = () => {
     }
   };
 
+  const handleGenderChange = (index, gender) => {
+    const updatedGenders = [...passengerGenders];
+    updatedGenders[index] = gender;
+    setPassengerGenders(updatedGenders);
+  };
+
+  const renderGenderInputs = () => {
+    const inputs = [];
+    for (let i = 0; i < bookedSeats; i++) {
+      inputs.push(
+        <div key={i}>
+          <label>Passenger {i + 1} Gender:</label>
+          <select
+            value={passengerGenders[i] || ''}
+            onChange={(e) => handleGenderChange(i, e.target.value)}
+          >
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      );
+    }
+    return inputs;
+  };
+
   const calculateRide = async () => {
-    if (pickup && destination && departureTime && availableSeats > 0 && selectedDriver) {
+    if (pickup && destination && departureTime && bookedSeats > 0 && selectedDriver && passengerGenders.length === bookedSeats) {
       const dist = calculateDistance(pickup, destination);
       setDistance(dist);
-      setPrice(dist * 150); // Assuming 150 PKR per km
+      const totalPrice = dist * 150 * bookedSeats; // Calculated total price based on booked seats
+      setPrice(totalPrice);
       setShowResults(true);
 
       try {
@@ -129,7 +153,7 @@ const MapWithSearch = () => {
           },
           body: JSON.stringify({
             driver: selectedDriver,
-            passengers: [id],
+            passenger: id,
             origin: {
               address: 'Pickup Location', // Replace with actual address
               coordinates: pickup,
@@ -139,8 +163,9 @@ const MapWithSearch = () => {
               coordinates: destination,
             },
             departureTime,
-            availableSeats,
-            pricePerSeat: price / distance, // Calculated price per seat
+            bookedSeats,
+            price: totalPrice, // Pass the total price to the ride object
+            passengers_gender: passengerGenders, // Send passenger genders
           }),
         });
         const data = await response.json();
@@ -190,20 +215,18 @@ const MapWithSearch = () => {
       />
       <input
         type="number"
-        value={availableSeats}
-        onChange={(e) => setAvailableSeats(Number(e.target.value))}
+        value={bookedSeats}
+        onChange={(e) => setBookedSeats(Number(e.target.value))}
         className="seats-input"
-        placeholder="Available Seats"
+        placeholder="Booked Seats"
       />
+      {renderGenderInputs()} {/* Render gender selection inputs */}
       <button onClick={calculateRide} className="calculate-ride-button">Calculate Ride</button>
       {showResults && distance && <div className="info-container">
         <p>Distance: {distance.toFixed(2)} km</p>
-        <p>Price: {price.toFixed(2)} PKR</p>
+        <p>Total Price: {price} PKR</p>
       </div>}
-      <button onClick={() => setShowDriversPopup(true)} >Show All Drivers</button>
-      <button onClick={logout} className="logout-button">Logout</button>
-
-      {/* Render the DriversPopup if showDriversPopup is true */}
+      <button onClick={() => setShowDriversPopup(true)} className="show-drivers-button">Show Drivers</button>
       {showDriversPopup && <DriversPopup onClose={() => setShowDriversPopup(false)} onBookDriver={handleBookDriver} />}
     </div>
   );
