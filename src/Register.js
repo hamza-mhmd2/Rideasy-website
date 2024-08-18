@@ -15,7 +15,8 @@ function Register() {
       licensePlate: "",
       Type: "",
       seats_in_vehicle: "",
-      price_per_seat:""
+      price_per_seat:"",
+      available_seats:"",
     }
   });
 
@@ -135,6 +136,13 @@ function Register() {
             value={userData.vehicle.price_per_seat}
             onChange={handleChange}
             placeholder="Set Price Per Seat"
+          />
+          <input
+            type="number"
+            name="vehicle.available_seats"
+            value={userData.vehicle.available_seats}
+            onChange={handleChange}
+            placeholder={userData.vehicle.seats_in_vehicle}
           />
         </div>
       )}

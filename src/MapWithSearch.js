@@ -67,6 +67,7 @@ const MapWithSearch = () => {
   const [selectedDriver, setSelectedDriver] = useState(''); // Selected driver ID state
   const [driverPricePerSeat, setDriverPricePerSeat] = useState(null); // Store driver's price per seat
   const [passengerGenders, setPassengerGenders] = useState([]); // State to store passenger genders
+  const [driverAvailableSeats,setAvailableSeats]=useState(0);
 
   const [fullName, setFullName] = useState('');
   const [id, setId] = useState('');
@@ -143,50 +144,55 @@ const MapWithSearch = () => {
   };
 
   const calculateRide = async () => {
-    if (pickup && destination && departureTime && bookedSeats > 0 && selectedDriver && passengerGenders.length === bookedSeats) {
-      const dist = calculateDistance(pickup, destination);
-      setDistance(dist);
-      const totalPrice = dist * driverPricePerSeat * bookedSeats; // Calculated total price based on booked seats
-      setPrice(totalPrice);
-      setShowResults(true);
-
-      try {
-        const response = await fetch('http://localhost:8000/api/v1/rides/create', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            driver: selectedDriver,
-            passenger: id,
-            origin: {
-              address: 'Pickup Location', // Replace with actual address
-              coordinates: pickup,
+    if (pickup && destination && departureTime && bookedSeats > 0 && selectedDriver) {
+      if (passengerGenders.length === bookedSeats && bookedSeats <= driverAvailableSeats) {
+        const dist = calculateDistance(pickup, destination);
+        setDistance(dist);
+        const totalPrice = dist * driverPricePerSeat * bookedSeats; // Calculated total price based on booked seats
+        setPrice(totalPrice);
+        setShowResults(true);
+  
+        try {
+          const response = await fetch('http://localhost:8000/api/v1/rides/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-            destination: {
-              address: 'Destination Location', // Replace with actual address
-              coordinates: destination,
-            },
-            departureTime,
-            bookedSeats,
-            price: totalPrice, // Pass the total price to the ride object
-            passengers_gender: passengerGenders, // Send passenger genders
-          }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          alert('Ride created successfully');
-        } else {
-          alert(`Failed to create ride: ${data.error}`);
+            body: JSON.stringify({
+              driver: selectedDriver,
+              passenger: id,
+              origin: {
+                address: 'Pickup Location', // Replace with actual address
+                coordinates: pickup,
+              },
+              destination: {
+                address: 'Destination Location', // Replace with actual address
+                coordinates: destination,
+              },
+              departureTime,
+              bookedSeats,
+              price: totalPrice, // Pass the total price to the ride object
+              passengers_gender: passengerGenders, // Send passenger genders
+            }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            alert('Ride created successfully');
+          } else {
+            alert(`Failed to create ride: ${data.error}`);
+          }
+        } catch (error) {
+          console.error('Error creating ride:', error);
+          alert('Error creating ride');
         }
-      } catch (error) {
-        console.error('Error creating ride:', error);
-        alert('Error creating ride');
+      } else {
+        alert('Please ensure the number of booked seats is within the available seats and that passenger genders are selected.');
       }
     } else {
       alert('Please provide all necessary details');
     }
   };
+  
 
   const handleBookDriver = async(driverId) => {
     setSelectedDriver(driverId);
@@ -198,8 +204,11 @@ const MapWithSearch = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const driver = await response.json();
-      if (driver && driver.vehicle && driver.vehicle.price_per_seat) {
+      if (driver && driver.vehicle && driver.vehicle.price_per_seat ) {
+        console.log(bookedSeats)
         setDriverPricePerSeat(driver.vehicle.price_per_seat);
+        setAvailableSeats(driver.vehicle.available_seats)
+        console.log(driverAvailableSeats)
       } else {
         alert('Failed to fetch driver price per seat');
       }
