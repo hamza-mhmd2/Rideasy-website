@@ -14,7 +14,8 @@ function Register() {
       year: "",
       licensePlate: "",
       Type: "",
-      seats_in_vehicle: 0
+      seats_in_vehicle: "",
+      price_per_seat:""
     }
   });
 
@@ -119,14 +120,21 @@ function Register() {
             name="vehicle.Type"
             value={userData.vehicle.Type}
             onChange={handleChange}
-            placeholder="Vehicle Type"
+            placeholder="Vehicle Type (AC/DC)"
           />
           <input
             type="number"
             name="vehicle.seats_in_vehicle"
             value={userData.vehicle.seats_in_vehicle}
             onChange={handleChange}
-            placeholder="Vehicle seats"
+            placeholder="Enter number of seats for passengers"
+          />
+          <input
+            type="number"
+            name="vehicle.price_per_seat"
+            value={userData.vehicle.price_per_seat}
+            onChange={handleChange}
+            placeholder="Set Price Per Seat"
           />
         </div>
       )}

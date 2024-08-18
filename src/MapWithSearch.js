@@ -61,6 +61,7 @@ const MapWithSearch = () => {
   const [bookedSeats, setBookedSeats] = useState(0);
   const [showDriversPopup, setShowDriversPopup] = useState(false); // Popup visibility state
   const [selectedDriver, setSelectedDriver] = useState(''); // Selected driver ID state
+  const [driverPricePerSeat, setDriverPricePerSeat] = useState(null); // Store driver's price per seat
   const [passengerGenders, setPassengerGenders] = useState([]); // State to store passenger genders
 
   const [fullName, setFullName] = useState('');
@@ -106,7 +107,7 @@ const MapWithSearch = () => {
     if (pickup && destination && showResults) {
       const dist = calculateDistance(pickup, destination);
       setDistance(dist);
-      setPrice(dist * 150); // Assuming 150 PKR per km
+      setPrice(dist * driverPricePerSeat); // Assuming 150 PKR per km
     }
   };
 
@@ -141,7 +142,7 @@ const MapWithSearch = () => {
     if (pickup && destination && departureTime && bookedSeats > 0 && selectedDriver && passengerGenders.length === bookedSeats) {
       const dist = calculateDistance(pickup, destination);
       setDistance(dist);
-      const totalPrice = dist * 150 * bookedSeats; // Calculated total price based on booked seats
+      const totalPrice = dist * driverPricePerSeat * bookedSeats; // Calculated total price based on booked seats
       setPrice(totalPrice);
       setShowResults(true);
 
@@ -183,9 +184,25 @@ const MapWithSearch = () => {
     }
   };
 
-  const handleBookDriver = (driverId) => {
+  const handleBookDriver = async(driverId) => {
     setSelectedDriver(driverId);
     setShowDriversPopup(false); // Optionally close the popup after booking
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/auth/drivers/${driverId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const driver = await response.json();
+      if (driver && driver.vehicle && driver.vehicle.price_per_seat) {
+        setDriverPricePerSeat(driver.vehicle.price_per_seat);
+      } else {
+        alert('Failed to fetch driver price per seat');
+      }
+    } catch (error) {
+      console.error('Error fetching driver details:', error);
+      alert(`Error fetching driver details: ${error.message}`);
+    }
   };
 
   const position = [31.5204, 74.3587]; // Default position (Lahore, Pakistan)
