@@ -4,6 +4,10 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import './MapWithSearch.css';
 import DriversPopup from './DriversPopup'; // Correct casing
+const logout = () => {
+  localStorage.removeItem('token'); // Remove the token from local storage
+  window.location.href = '/login'; // Redirect to login page
+};
 
 // Custom icons
 const pickupIcon = new L.Icon({
@@ -241,10 +245,11 @@ const MapWithSearch = () => {
       <button onClick={calculateRide} className="calculate-ride-button">Calculate Ride</button>
       {showResults && distance && <div className="info-container">
         <p>Distance: {distance.toFixed(2)} km</p>
-        <p>Total Price: {price} PKR</p>
+        <p>Total Price: {price.toFixed(2)} PKR</p>
       </div>}
       <button onClick={() => setShowDriversPopup(true)} className="show-drivers-button">Show Drivers</button>
       {showDriversPopup && <DriversPopup onClose={() => setShowDriversPopup(false)} onBookDriver={handleBookDriver} />}
+      <button onClick={logout} className="logout-button">Logout</button>
     </div>
   );
 };
