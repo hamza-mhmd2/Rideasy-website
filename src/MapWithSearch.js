@@ -4,6 +4,9 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import './MapWithSearch.css';
 import DriversPopup from './DriversPopup'; // Correct casing
+
+import { useNavigate } from 'react-router-dom'; // For React Router v6
+
 const logout = () => {
   localStorage.removeItem('token'); // Remove the token from local storage
   window.location.href = '/login'; // Redirect to login page
@@ -71,6 +74,8 @@ const MapWithSearch = () => {
 
   const [fullName, setFullName] = useState('');
   const [id, setId] = useState('');
+
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
     const storedName = localStorage.getItem('fullName');
@@ -177,7 +182,8 @@ const MapWithSearch = () => {
           });
           const data = await response.json();
           if (response.ok) {
-            alert('Ride created successfully');
+            // Redirect to the chat page
+            navigate(`/chat/${data.rideId}`);// Assuming the response contains the rideId
           } else {
             alert(`Failed to create ride: ${data.error}`);
           }
@@ -192,6 +198,7 @@ const MapWithSearch = () => {
       alert('Please provide all necessary details');
     }
   };
+  
   
 
   const handleBookDriver = async(driverId) => {
