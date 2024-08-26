@@ -6,7 +6,6 @@ import MapWithSearch from './MapWithSearch'; // Import the MapWithSearch compone
 import Login from "./Login";
 import RideHistory from './RideHistory';
 import PrivateRoute from './privateRouter';
-import Chat from './Chat.js'; 
 import BookingGoogleMap from './BookingGoogleMap.jsx';
 function App() {
   return (
@@ -14,7 +13,6 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/register" element={<Register />} />
-          <Route path="/chat/:rideId" element={<Chat/>} />
           <Route path="/" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/history" element={<RideHistory />} />
