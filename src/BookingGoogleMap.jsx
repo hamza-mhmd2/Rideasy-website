@@ -25,7 +25,7 @@ const BookingGoogleMap = () => {
 
   const navigate = useNavigate();
 
-  const googleMapsApiKey = 'AIzaSyDtXKDh9X7rTW5qdp4b169mYjs9oAZvxs0'; // Replace with your Google Maps API key
+  const googleMapsApiKey = 'INSERT_API_KEY_HERE'; // Replace with your Google Maps API key
 
   useEffect(() => {
     const storedName = localStorage.getItem('fullName');
