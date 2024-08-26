@@ -24,7 +24,13 @@ function App() {
             <PrivateRoute element={<MapWithSearch />} />
           }
         />
-        <Route path="/book-map" element={<BookingGoogleMap />} />
+        <Route
+          path="/book-map"
+          element={
+            <PrivateRoute element={<BookingGoogleMap />} />
+          }
+        />
+        
         </Routes>
       </div>
     </Router>
