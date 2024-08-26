@@ -5,14 +5,16 @@ import Register from './Register';
 import MapWithSearch from './MapWithSearch'; // Import the MapWithSearch component
 import Login from "./Login";
 import RideHistory from './RideHistory';
-import PrivateRoute from './privateRouter'; 
+import PrivateRoute from './privateRouter';
+
+import BookingGoogleMap from './BookingGoogleMap.jsx';
 function App() {
   return (
     <Router>
       <div className="App">
         <Routes>
           <Route path="/register" element={<Register />} />
-         
+
           <Route path="/" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/history" element={<RideHistory />} />
@@ -22,6 +24,13 @@ function App() {
             <PrivateRoute element={<MapWithSearch />} />
           }
         />
+        <Route
+          path="/book-map"
+          element={
+            <PrivateRoute element={<BookingGoogleMap />} />
+          }
+        />
+        <Route path="/book-map" element={<BookingGoogleMap />} />
         </Routes>
       </div>
     </Router>
