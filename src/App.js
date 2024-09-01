@@ -4,8 +4,8 @@ import SplashScreen from './components/splashScreen';
 import WelcomeScreen from './components/WelcomeScreen';
 import RegisterScreen from './components/RegisterScreen';
 import Login from './Login'
-import MapWithSearch from './MapWithSearch';
 import PrivateRoute from './privateRouter';
+import BookingGoogleMap from './BookingGoogleMap';
 
 function App() {
   const [splashVisible, setSplashVisible] = useState(true);
@@ -25,9 +25,9 @@ function App() {
             <Route path="/register" element={<RegisterScreen />} />
             <Route path="/signin" element={<Login />} />
             <Route
-              path="/map"
+              path="/book-map"
               element={
-                <PrivateRoute element={<MapWithSearch />} />
+                <PrivateRoute element={<BookingGoogleMap />} />
               }
             />
           </Routes>
