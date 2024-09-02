@@ -1,15 +1,16 @@
 /* global google */
-
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import DriversPopup from './DriversPopup';
 import { useNavigate } from 'react-router-dom';
+import { io } from "socket.io-client";
 import PlacesSearch from './PlacesSearch';
 
 const BookingGoogleMap = () => {
   const [pickup, setPickup] = useState(null);
   const [destination, setDestination] = useState(null);
   const [directionsResponse, setDirectionsResponse] = useState(null);
+  const [driverLocation, setDriverLocation] = useState(null);
   const [distance, setDistance] = useState(null);
   const [price, setPrice] = useState(null);
   const [showResults, setShowResults] = useState(false);
@@ -22,10 +23,37 @@ const BookingGoogleMap = () => {
   const [driverAvailableSeats, setAvailableSeats] = useState(0);
   const [fullName, setFullName] = useState('');
   const [id, setId] = useState('');
-
+  const [userLocation, setUserLocation] = useState(null);
+  const [driverLocations, setDriverLocations] = useState({});
   const navigate = useNavigate();
+  const socket = io("http://localhost:8000"); // Connect to the WebSocket server
 
-  const googleMapsApiKey = 'INSERT_API_KEY_HERE'; // Replace with your Google Maps API key
+  useEffect(() => {
+    // Listen for driver's location updates
+    socket.on("locationUpdate", (locationData) => {
+      const { driverId, lat, lng } = locationData;
+      setDriverLocations((prevLocations) => ({
+        ...prevLocations,
+        [driverId]: { lat, lng },
+      }));
+    });
+
+    // Listen for driver's disconnection
+    socket.on("driverDisconnected", ({ driverId }) => {
+      setDriverLocations((prevLocations) => {
+        const updatedLocations = { ...prevLocations };
+        delete updatedLocations[driverId];
+        return updatedLocations;
+      });
+    });
+
+    return () => {
+      socket.off("locationUpdate");
+      socket.off("driverDisconnected"); // Clean up the event listener
+    };
+  }, [socket]);
+
+  const googleMapsApiKey = 'AIzaSyDtXKDh9X7rTW5qdp4b169mYjs9oAZvxs0'; // Replace with your Google Maps API key
 
   useEffect(() => {
     const storedName = localStorage.getItem('fullName');
@@ -43,12 +71,13 @@ const BookingGoogleMap = () => {
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const currentLocation = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         };
         setPickup(currentLocation);
+        setUserLocation(currentLocation);
       },
       (error) => console.error('Error getting current location:', error),
       { enableHighAccuracy: true }
@@ -197,7 +226,7 @@ const BookingGoogleMap = () => {
 
   return (
     <div>
-      <h2>Welcome {fullName}</h2>
+       <h2>Welcome {fullName}</h2>
       <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={['places']}>
         <GoogleMap
           center={pickup || { lat: 31.5204, lng: 74.3587 }}
@@ -206,6 +235,16 @@ const BookingGoogleMap = () => {
         >
           {pickup && <Marker position={pickup} />}
           {destination && <Marker position={destination} />}
+          {Object.values(driverLocations).map((location, index) => (
+            <Marker
+              key={index}
+              position={location}
+              icon={{
+                url: "https://cdn-icons-png.flaticon.com/512/5193/5193688.png",
+                scaledSize: new window.google.maps.Size(30, 30), // Adjust the size as needed
+              }}
+            />
+          ))}
           {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
         </GoogleMap>
         <PlacesSearch
@@ -217,34 +256,34 @@ const BookingGoogleMap = () => {
           placeholder="Enter Destination"
         />
       </LoadScript>
+
       <input
         type="datetime-local"
         value={departureTime}
         onChange={(e) => setDepartureTime(e.target.value)}
-        className="datetime-input"
       />
       <input
         type="number"
         value={bookedSeats}
-        onChange={(e) => setBookedSeats(Number(e.target.value))}
-        className="seats-input"
-        placeholder="Booked Seats"
+        onChange={(e) => setBookedSeats(parseInt(e.target.value, 10))}
       />
       {renderGenderInputs()}
-      <button onClick={calculateRide} className="calculate-ride-button">Calculate Ride</button>
-      {showResults && distance && (
-        <div className="info-container">
-          <p>Distance: {distance.toFixed(2)} km</p>
-          <p>Total Price: {price.toFixed(2)} PKR</p>
-        </div>
+      <button onClick={calculateRide}>Calculate Ride</button>
+      {showResults && (
+        <>
+          <p>Distance: {distance} km</p>
+          <p>Total Price: ${price}</p>
+          <button onClick={calculateRide}>Create Ride</button>
+        </>
       )}
-      <button onClick={() => setShowDriversPopup(true)} className="show-drivers-button">
-        Show Drivers
-      </button>
+      <button onClick={logout}>Logout</button>
+      <button onClick={() => setShowDriversPopup(true)}>Show Available Drivers</button>
       {showDriversPopup && (
-        <DriversPopup onClose={() => setShowDriversPopup(false)} onBookDriver={handleBookDriver} />
+        <DriversPopup
+          onClose={() => setShowDriversPopup(false)}
+          onBookDriver={handleBookDriver}
+        />
       )}
-      <button onClick={logout} className="logout-button">Logout</button>
     </div>
   );
 };
