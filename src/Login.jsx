@@ -24,15 +24,21 @@ function Login() {
       const response = await axios.post("http://localhost:8000/api/v1/auth/login", formData);
       console.log('Login response:', response.data);
 
-      // Store the JWT token in local storage
+      // Store the JWT token and user information in local storage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('fullName', response.data.user.fullName);
       localStorage.setItem('id', response.data.user.id);
-      console.log(response.data.user.fullName)
-      console.log(response.data.user.id)
+      localStorage.setItem('role', response.data.user.role); // Store the user's role
 
-      // Redirect to the map searcher page
-      navigate('/map');
+      // Redirect based on the user's role
+      if (response.data.user.role === 'driver') {
+        navigate('/driver-app');
+      } else if (response.data.user.role === 'passenger') {
+        navigate('/book-map');
+      } else {
+        console.error('Unknown role:', response.data.user.role);
+        // Optionally handle unknown roles, e.g., navigate to an error page
+      }
     } catch (error) {
       console.error('Login error:', error);
     }
