@@ -6,7 +6,7 @@ import RegisterScreen from './components/RegisterScreen';
 import Login from './Login'
 import PrivateRoute from './privateRouter';
 import BookingGoogleMap from './BookingGoogleMap';
-
+import DriverApp from './driverPage';
 
 function App() {
   const [splashVisible, setSplashVisible] = useState(true);
@@ -29,6 +29,12 @@ function App() {
               path="/book-map"
               element={
                 <PrivateRoute element={<BookingGoogleMap />} />
+              }
+            />
+            <Route
+              path="/driver-app"
+              element={
+                <PrivateRoute element={<DriverApp />} />
               }
             />
            
