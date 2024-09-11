@@ -7,6 +7,9 @@ import Login from './Login'
 import PrivateRoute from './privateRouter';
 import BookingGoogleMap from './BookingGoogleMap';
 import DriverApp from './driverPage';
+import DriverInbox from './DriverInbox';
+import PassengerApp from './PassengerApp';
+import PassengerInbox from './PassengerInbox';
 
 function App() {
   const [splashVisible, setSplashVisible] = useState(true);
@@ -37,7 +40,16 @@ function App() {
                 <PrivateRoute element={<DriverApp />} />
               }
             />
-           
+            <Route
+              path="/passenger-app"
+              element={
+                <PrivateRoute element={<PassengerApp />} />
+              }
+            />
+            <Route path="/driver/inbox" element={<DriverInbox />} />
+            <Route path="/passenger/inbox" element={<PassengerInbox />} />
+            <Route path="/driver/rides" element={<DriverApp />} /> {/* Add driver rides page here */}
+            <Route path="/passenger/rides" element={<PassengerApp />} /> {/* Add passenger rides page here */}
           </Routes>
         </Router>
       )}

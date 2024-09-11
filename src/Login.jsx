@@ -34,7 +34,7 @@ function Login() {
       if (response.data.user.role === 'driver') {
         navigate('/driver-app');
       } else if (response.data.user.role === 'passenger') {
-        navigate('/book-map');
+        navigate('/passenger-app');
       } else {
         console.error('Unknown role:', response.data.user.role);
         // Optionally handle unknown roles, e.g., navigate to an error page

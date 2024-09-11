@@ -138,6 +138,13 @@ const BookingGoogleMap = () => {
     }
   };
 
+  useEffect(() => {
+    // Automatically calculate route when both pickup and destination are set
+    if (pickup && destination) {
+      calculateRoute();
+    }
+  }, [pickup, destination]); // Runs whenever pickup or destination changes
+
   const calculateRide = async () => {
     if (pickup && destination && departureTime && bookedSeats > 0 && selectedDriver) {
       if (passengerGenders.length === bookedSeats && bookedSeats <= driverAvailableSeats) {

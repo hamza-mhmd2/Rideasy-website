@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { io } from "socket.io-client";
-
+import { Link } from 'react-router-dom';
 const socket = io("http://localhost:8000"); // Connect to the WebSocket server
 
 const DriverApp = () => {
@@ -25,6 +25,10 @@ const DriverApp = () => {
   return (
     <div>
       <h2>Welcome Driver</h2>
+      <nav>
+        <Link to="/driver/inbox">Inbox</Link>
+        <Link to="/driver/rides">View Rides</Link>
+      </nav>
       
     </div>
   );

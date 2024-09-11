@@ -22,7 +22,6 @@
     "tailwindcss": "^3.4.10",
     "textflow.js": "^0.1.4",
     "web-vitals": "^2.1.4"
-
   },
   "scripts": {
     "start": "react-scripts start",
