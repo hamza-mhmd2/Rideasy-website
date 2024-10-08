@@ -5,6 +5,7 @@ import DriversPopup from './DriversPopup';
 import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
 import PlacesSearch from './PlacesSearch';
+import { FaMapMarkerAlt, FaMapPin } from 'react-icons/fa';
 
 const BookingGoogleMap = () => {
   const [pickup, setPickup] = useState(null);
@@ -26,6 +27,7 @@ const BookingGoogleMap = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [driverLocations, setDriverLocations] = useState({});
   const navigate = useNavigate();
+  const [driversList, setDriversList] = useState([]);
   const socket = io("http://localhost:8000"); // Connect to the WebSocket server
 
   useEffect(() => {
@@ -99,7 +101,7 @@ const BookingGoogleMap = () => {
 
   const logout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    window.location.href = '/signin';
   };
 
   const handleGenderChange = (index, gender) => {
@@ -117,6 +119,7 @@ const BookingGoogleMap = () => {
           <select
             value={passengerGenders[i] || ''}
             onChange={(e) => handleGenderChange(i, e.target.value)}
+            className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
           >
             <option value="">Select Gender</option>
             <option value="male">Male</option>
@@ -165,6 +168,20 @@ const BookingGoogleMap = () => {
         setPrice(totalPrice);
         setShowResults(true);
 
+      } else {
+        alert('Please ensure the number of booked seats is within the available seats and that passenger genders are selected.');
+      }
+    } else {
+      alert('Please provide all necessary details');
+    }
+  };
+  const BookRide = async () => {
+    if (pickup && destination && departureTime && bookedSeats > 0 && selectedDriver) {
+      if (passengerGenders.length === bookedSeats && bookedSeats <= driverAvailableSeats) {
+        const totalPrice = distance * driverPricePerSeat * bookedSeats;
+        setPrice(totalPrice);
+        setShowResults(true);
+
         try {
           const response = await fetch('http://localhost:8000/api/v1/rides/create', {
             method: 'POST',
@@ -191,9 +208,9 @@ const BookingGoogleMap = () => {
           const data = await response.json();
           if (response.ok) {
             localStorage.setItem('rideId', data.ride._id);
-            alert('Ride created successfully');
+            alert('Ride Booked successfully');
           } else {
-            alert(`Failed to create ride: ${data.error}`);
+            alert(`Failed to book ride: ${data.error}`);
           }
         } catch (error) {
           console.error('Error creating ride:', error);
@@ -245,67 +262,173 @@ const BookingGoogleMap = () => {
     }
   };
 
+  const showDrivers = async () => {
+    try {
+      setShowDriversPopup(true);
+      
+      // Fetch all drivers from the backend
+      const response = await fetch('http://localhost:8000/api/v1/auth/drivers');
+      if (!response.ok) {
+        throw new Error('Failed to fetch drivers');
+      }
+      const drivers = await response.json();
+      
+      // Filter drivers whose location is available in the driverLocations state (i.e., they're shown on the map)
+      const availableDrivers = drivers.filter(driver => driverLocations[driver._id]);
+  
+      // Set the filtered list of drivers
+      setDriversList(availableDrivers);
+  
+      setShowDriversPopup(true);
+    } catch (error) {
+      console.error('Error fetching drivers:', error);
+    }
+  };
+  
   return (
-    <div>
-       <h2>Welcome {fullName}</h2>
-      <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={['places']}>
-        <GoogleMap
-          center={pickup || { lat: 31.5204, lng: 74.3587 }}
-          zoom={13}
-          mapContainerStyle={{ height: '500px', width: '100%' }}
-        >
-          {pickup && <Marker position={pickup} />}
-          {destination && <Marker position={destination} />}
-          {Object.values(driverLocations).map((location, index) => (
-            <Marker
-              key={index}
-              position={location}
-              icon={{
-                url: "https://cdn-icons-png.flaticon.com/512/5193/5193688.png",
-                scaledSize: new window.google.maps.Size(30, 30), // Adjust the size as needed
-              }}
-            />
-          ))}
-          {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
-        </GoogleMap>
-        <PlacesSearch
-          onPlaceSelected={(place) => handlePlaceSearch(place, 'pickup')}
-          placeholder="Enter Pickup Point"
-        />
-        <PlacesSearch
-          onPlaceSelected={(place) => handlePlaceSearch(place, 'destination')}
-          placeholder="Enter Destination"
-        />
-      </LoadScript>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+   <div className='flex'> 
+      <p className="text-2xl font-bold text-orange-600 my-4 mr-96">Welcome,  Book ride</p>
+      <button
+        onClick={logout}
+        className="my-4 ml-96 text-2xl bg-red-600 text-white py-2 px-2 rounded-md hover:bg-red-700 w-full max-w-xs"
+      >
+        Logout
+      </button>
+      </div>
+      <div className="w-full max-w-6xl p-4 bg-white shadow-md rounded-lg">
+        <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={['places']}>
+          <GoogleMap
+            center={pickup || { lat: 31.5204, lng: 74.3587 }}
+            zoom={13}
+            mapContainerStyle={{ height: '500px', width: '100%' }}
+            className="rounded-lg overflow-hidden"
+          >
+            {pickup && <Marker position={pickup} />}
+            {destination && <Marker position={destination} />}
+            {Object.values(driverLocations).map((location, index) => (
+              <Marker
+                key={index}
+                position={location}
+                icon={{
+                  url: "https://cdn-icons-png.flaticon.com/512/5193/5193688.png",
+                  scaledSize: new window.google.maps.Size(30, 30), // Adjust the size as needed
+                }}
+              />
+            ))}
+            {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
+          </GoogleMap>
+          <div className="flex mt-4 space-x-4">
+  {/* Pickup Location */}
+  <div className="relative w-full">
+    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+    
+    </div>
+    <PlacesSearch
+      onPlaceSelected={(place) => handlePlaceSearch(place, 'pickup')}
+      placeholder="Enter Pickup Point"
+      className="w-full pl-10 p-2 border border-gray-400 rounded-md"
+    />
+  </div>
+  
+  {/* Destination Location */}
+  <div className="relative w-full">
+  
+    <PlacesSearch
+      onPlaceSelected={(place) => handlePlaceSearch(place, 'destination')}
+      placeholder="Enter Destination"
+      className="w-full pl-10 p-2 border border-gray-400 rounded-md"
+    />
+  </div>
+</div>
 
-      <input
-        type="datetime-local"
-        value={departureTime}
-        onChange={(e) => setDepartureTime(e.target.value)}
-      />
-      <input
-        type="number"
-        value={bookedSeats}
-        onChange={(e) => setBookedSeats(parseInt(e.target.value, 10))}
-      />
-      {renderGenderInputs()}
-      <button onClick={calculateRide}>Calculate Ride</button>
-      {showResults && (
-        <>
-          <p>Distance: {distance} km</p>
-          <p>Total Price: ${price}</p>
-          <button onClick={calculateRide}>Create Ride</button>
-        </>
-      )}
-      <button onClick={logout}>Logout</button>
-      <button onClick={() => setShowDriversPopup(true)}>Show Available Drivers</button>
+
+
+        </LoadScript>
+        <div className="mt-4">
+          <label className="text-sm font-medium text-gray-700">Departure Time:</label>
+          <input
+            type="datetime-local"
+            value={departureTime}
+            onChange={(e) => setDepartureTime(e.target.value)}
+            className="block w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+          />
+        </div>
+        <div className="flex flex-col mt-4 space-y-4">
+          <label className="text-sm font-medium text-gray-700">Number of Seats:</label>
+          <input
+            type="number"
+            value={bookedSeats}
+            onChange={(e) => setBookedSeats(parseInt(e.target.value, 10))}
+            placeholder='Enter number of seats'
+            className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500"
+          />
+          {renderGenderInputs()}
+          <button
+            onClick={calculateRide}
+            className="bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700"
+          >
+            Calculate Ride
+          </button>
+          {showResults && (
+            <>
+              <p className="text-gray-700">Distance: {distance} km</p>
+              <p className="text-gray-700">Total Price: PKR.{price}</p>
+              <button
+                onClick={BookRide}
+                className="bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700"
+              >
+                Book Ride
+              </button>
+            </>
+          )}
+        </div>
+        <div className="w-full max-w-6xl mt-8">
+        <button
+          onClick={showDrivers}
+          className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 w-full "
+        >
+          Show Available Drivers
+        </button>
+      </div>
+      
+      </div>
+
+      
+
+  
       {showDriversPopup && (
-        <DriversPopup
-        onClose={() => setShowDriversPopup(false)}
-        onBookDriver={handleBookDriver}
-        driverLocations={driverLocations} // Pass driver locations as a prop
-      />
-      )}
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-lg">
+              <h3 className="text-xl font-semibold mb-4">Available Drivers</h3>
+              <ul>
+                {driversList.length > 0 ? (
+                  driversList.map((driver) => (
+                    <li key={driver._id} className="border-b py-2">
+                      <div className="flex justify-between items-center">
+                        <span>{driver.fullName} (Price per seat: PKR.{driver.vehicle.price_per_seat})</span>
+                        <button
+                          className="bg-green-500 text-white px-4 py-2 rounded"
+                          onClick={() => handleBookDriver(driver._id)}
+                        >
+                          Book Driver
+                        </button>
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <p>No drivers available at the moment.</p>
+                )}
+              </ul>
+              <button
+                className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
+                onClick={() => setShowDriversPopup(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
     </div>
   );
 };
