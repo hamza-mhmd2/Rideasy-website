@@ -1,6 +1,7 @@
 /* global google */
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
+import { Grid, Button, TextField, Typography, Box, Select, MenuItem } from '@mui/material'; // Material UI components
 import DriversPopup from './DriversPopup';
 import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
@@ -26,7 +27,7 @@ const BookingGoogleMap = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [driverLocations, setDriverLocations] = useState({});
   const navigate = useNavigate();
-  const socket = io("http://localhost:8000"); // Connect to the WebSocket server
+  const socket = io("http://localhost:8000"); //Web socket connection
 
   useEffect(() => {
     // Listen for driver's location updates
@@ -54,7 +55,10 @@ const BookingGoogleMap = () => {
   }, [socket]);
 
   const googleMapsApiKey = 'AIzaSyDtXKDh9X7rTW5qdp4b169mYjs9oAZvxs0'; // Replace with your Google Maps API key
-
+  const handleLoad = () => {
+    console.log("Google Maps API loaded");
+    // Now you can use google.maps safely
+  };
   useEffect(() => {
     const storedName = localStorage.getItem('fullName');
     if (storedName) {
@@ -97,36 +101,35 @@ const BookingGoogleMap = () => {
     };
   }, [socket]);
 
+// Logout function
   const logout = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
   };
 
+// Handle gender selection for each booked seat
   const handleGenderChange = (index, gender) => {
     const updatedGenders = [...passengerGenders];
     updatedGenders[index] = gender;
     setPassengerGenders(updatedGenders);
   };
 
+// Render gender selection inputs based on the number of booked seats
   const renderGenderInputs = () => {
-    const inputs = [];
-    for (let i = 0; i < bookedSeats; i++) {
-      inputs.push(
-        <div key={i}>
-          <label>Passenger {i + 1} Gender:</label>
-          <select
-            value={passengerGenders[i] || ''}
-            onChange={(e) => handleGenderChange(i, e.target.value)}
-          >
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-      );
-    }
-    return inputs;
+    return [...Array(bookedSeats).keys()].map((index) => (
+      <Box key={index} mb={2}>
+        <Typography>Passenger {index + 1} Gender</Typography>
+        <Select
+          fullWidth
+          value={passengerGenders[index] || ''}
+          onChange={(e) => handleGenderChange(index, e.target.value)}
+        >
+          <MenuItem value="male">Male</MenuItem>
+          <MenuItem value="female">Female</MenuItem>
+          <MenuItem value="other">Other</MenuItem>
+        </Select>
+      </Box>
+    ));
   };
 
   const calculateRoute = async () => {
@@ -246,9 +249,94 @@ const BookingGoogleMap = () => {
   };
 
   return (
-    <div>
-       <h2>Welcome {fullName}</h2>
-      <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={['places']}>
+    <Grid container spacing={2}>
+      <Grid item xs={12} md={4}>
+        <Box p={3} sx={{ bgcolor: '#f5f5f5', minHeight: '100vh' }}>
+          <Typography variant="h4" gutterBottom>Welcome {fullName}</Typography>
+
+          <Box mb={2}>
+            <Typography>Pickup Location</Typography>
+            <PlacesSearch
+              onPlaceSelected={(place) => handlePlaceSearch(place, 'pickup')}
+              placeholder="Enter Pickup Point"
+            />
+          </Box>
+
+          <Box mb={2}>
+            <Typography>Destination</Typography>
+            <PlacesSearch
+              onPlaceSelected={(place) => handlePlaceSearch(place, 'destination')}
+              placeholder="Enter Destination"
+            />
+          </Box>
+
+          <TextField
+            fullWidth
+            label="Departure Time"
+            type="datetime-local"
+            value={departureTime}
+            onChange={(e) => setDepartureTime(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+
+          <TextField
+            fullWidth
+            label="Number of Seats"
+            type="number"
+            value={bookedSeats}
+            onChange={(e) => setBookedSeats(parseInt(e.target.value, 10))}
+            sx={{ mb: 2 }}
+          />
+
+          {renderGenderInputs()}
+
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={calculateRide}
+          >
+            Calculate Ride
+          </Button>
+
+          {showResults && (
+            <Box mt={2}>
+              <Typography>Distance: {distance} km</Typography>
+              <Typography>Total Price: ${price}</Typography>
+            </Box>
+          )}
+
+          <Button
+            fullWidth
+            variant="outlined"
+            color="secondary"
+            onClick={() => setShowDriversPopup(true)}
+            sx={{ mt: 2 }}
+          >
+            Show Available Drivers
+          </Button>
+
+          {showDriversPopup && (
+            <DriversPopup
+              onClose={() => setShowDriversPopup(false)}
+              onBookDriver={handleBookDriver}
+            />
+          )}
+
+          <Button
+            fullWidth
+            variant="outlined"
+            color="error"
+            onClick={logout}
+            sx={{ mt: 2 }}
+          >
+            Logout
+          </Button>
+        </Box>
+      </Grid>
+
+      <Grid item xs={12} md={8}>
+        <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={['places']} onLoad={handleLoad}>
         <GoogleMap
           center={pickup || { lat: 31.5204, lng: 74.3587 }}
           zoom={13}
@@ -268,45 +356,9 @@ const BookingGoogleMap = () => {
           ))}
           {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
         </GoogleMap>
-        <PlacesSearch
-          onPlaceSelected={(place) => handlePlaceSearch(place, 'pickup')}
-          placeholder="Enter Pickup Point"
-        />
-        <PlacesSearch
-          onPlaceSelected={(place) => handlePlaceSearch(place, 'destination')}
-          placeholder="Enter Destination"
-        />
-      </LoadScript>
-
-      <input
-        type="datetime-local"
-        value={departureTime}
-        onChange={(e) => setDepartureTime(e.target.value)}
-      />
-      <input
-        type="number"
-        value={bookedSeats}
-        onChange={(e) => setBookedSeats(parseInt(e.target.value, 10))}
-      />
-      {renderGenderInputs()}
-      <button onClick={calculateRide}>Calculate Ride</button>
-      {showResults && (
-        <>
-          <p>Distance: {distance} km</p>
-          <p>Total Price: ${price}</p>
-          <button onClick={calculateRide}>Create Ride</button>
-        </>
-      )}
-      <button onClick={logout}>Logout</button>
-      <button onClick={() => setShowDriversPopup(true)}>Show Available Drivers</button>
-      {showDriversPopup && (
-        <DriversPopup
-        onClose={() => setShowDriversPopup(false)}
-        onBookDriver={handleBookDriver}
-        driverLocations={driverLocations} // Pass driver locations as a prop
-      />
-      )}
-    </div>
+        </LoadScript>
+      </Grid>
+    </Grid>
   );
 };
 

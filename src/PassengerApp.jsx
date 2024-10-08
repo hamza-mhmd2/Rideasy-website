@@ -7,6 +7,7 @@ const PassengerApp = () => {
       <nav>
         <Link to="/passenger/inbox">Inbox</Link>
         <Link to="/passenger/rides">View Rides</Link>
+        <Link to="/book-map">Book Ride</Link>
       </nav>
     </div>
   );

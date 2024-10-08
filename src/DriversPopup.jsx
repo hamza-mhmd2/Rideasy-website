@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const DriversPopup = ({ onClose, onBookDriver }) => {
+const DriversPopup = ({ onClose, onBookDriver, driverLocations }) => {
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,6 +24,9 @@ const DriversPopup = ({ onClose, onBookDriver }) => {
     fetchDrivers();
   }, []);
 
+  // Filter drivers who are present on the WebSockets map (in driverLocations)
+  const driversOnMap = drivers.filter(driver => driverLocations[driver._id]);
+
   return (
     <div className="drivers-popup">
       <div className="drivers-popup-content">
@@ -33,9 +36,9 @@ const DriversPopup = ({ onClose, onBookDriver }) => {
           <p>Loading drivers...</p>
         ) : error ? (
           <p>Error: {error}</p>
-        ) : drivers.length > 0 ? (
+        ) : driversOnMap.length > 0 ? (
           <ul>
-            {drivers.map((driver) => (
+            {driversOnMap.map((driver) => (
               <li key={driver._id}>
                 {driver.fullName} - {driver.vehicle?.make} {driver.vehicle?.model} ({driver.vehicle?.year}) - {driver.vehicle?.Type}
                 <button onClick={() => onBookDriver(driver._id)} className="book-button">Book</button>
@@ -43,7 +46,7 @@ const DriversPopup = ({ onClose, onBookDriver }) => {
             ))}
           </ul>
         ) : (
-          <p>No drivers available</p>
+          <p>No drivers available on the map</p>
         )}
       </div>
     </div>
