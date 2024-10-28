@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SplashScreen from './components/splashScreen';
 import WelcomeScreen from './components/WelcomeScreen';
@@ -10,13 +10,21 @@ import DriverApp from './driverPage';
 import DriverInbox from './DriverInbox';
 import PassengerApp from './PassengerApp';
 import PassengerInbox from './PassengerInbox';
-
+import { io } from "socket.io-client";
 function App() {
   const [splashVisible, setSplashVisible] = useState(true);
+  const socket = io("http://localhost:8000"); // Connect to the WebSocket server
 
   const handleSplashEnd = () => {
     setSplashVisible(false);
   };
+
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log(`connected to server | socket id : ${socket.id}`);
+    })
+  }, [])
 
   return (
     <div className="App">
