@@ -27,7 +27,7 @@ const BookingGoogleMap = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [driverLocations, setDriverLocations] = useState({});
   const navigate = useNavigate();
-  const socket = io("http://localhost:8000"); //Web socket connection
+  const socket = io(process.env.REMOTE_URL); //Web socket connection
 
   useEffect(() => {
     // Listen for driver's location updates
@@ -91,30 +91,30 @@ const BookingGoogleMap = () => {
   useEffect(() => {
     const rideId = localStorage.getItem('rideId');
     const userId = localStorage.getItem('id');
-  
+
     if (rideId && userId) {
       socket.emit("joinRoom", { rideId, userId });
     }
-  
+
     return () => {
       socket.off("joinRoom");
     };
   }, [socket]);
 
-// Logout function
+  // Logout function
   const logout = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
   };
 
-// Handle gender selection for each booked seat
+  // Handle gender selection for each booked seat
   const handleGenderChange = (index, gender) => {
     const updatedGenders = [...passengerGenders];
     updatedGenders[index] = gender;
     setPassengerGenders(updatedGenders);
   };
 
-// Render gender selection inputs based on the number of booked seats
+  // Render gender selection inputs based on the number of booked seats
   const renderGenderInputs = () => {
     return [...Array(bookedSeats).keys()].map((index) => (
       <Box key={index} mb={2}>
@@ -169,7 +169,7 @@ const BookingGoogleMap = () => {
         setShowResults(true);
 
         try {
-          const response = await fetch('http://localhost:8000/api/v1/rides/create', {
+          const response = await fetch(`${process.env.REMOTE_URL}/api/v1/rides/create`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -215,7 +215,7 @@ const BookingGoogleMap = () => {
     setShowDriversPopup(false);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/auth/drivers/${driverId}`);
+      const response = await fetch(`${process.env.REMOTE_URL}/api/v1/auth/drivers/${driverId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -337,25 +337,25 @@ const BookingGoogleMap = () => {
 
       <Grid item xs={12} md={8}>
         <LoadScript googleMapsApiKey={googleMapsApiKey} libraries={['places']} onLoad={handleLoad}>
-        <GoogleMap
-          center={pickup || { lat: 31.5204, lng: 74.3587 }}
-          zoom={13}
-          mapContainerStyle={{ height: '500px', width: '100%' }}
-        >
-          {pickup && <Marker position={pickup} />}
-          {destination && <Marker position={destination} />}
-          {Object.values(driverLocations).map((location, index) => (
-            <Marker
-              key={index}
-              position={location}
-              icon={{
-                url: "https://cdn-icons-png.flaticon.com/512/5193/5193688.png",
-                scaledSize: new window.google.maps.Size(30, 30), // Adjust the size as needed
-              }}
-            />
-          ))}
-          {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
-        </GoogleMap>
+          <GoogleMap
+            center={pickup || { lat: 31.5204, lng: 74.3587 }}
+            zoom={13}
+            mapContainerStyle={{ height: '500px', width: '100%' }}
+          >
+            {pickup && <Marker position={pickup} />}
+            {destination && <Marker position={destination} />}
+            {Object.values(driverLocations).map((location, index) => (
+              <Marker
+                key={index}
+                position={location}
+                icon={{
+                  url: "https://cdn-icons-png.flaticon.com/512/5193/5193688.png",
+                  scaledSize: new window.google.maps.Size(30, 30), // Adjust the size as needed
+                }}
+              />
+            ))}
+            {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
+          </GoogleMap>
         </LoadScript>
       </Grid>
     </Grid>

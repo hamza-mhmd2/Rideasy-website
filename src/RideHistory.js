@@ -14,8 +14,7 @@ const RideHistory = () => {
                     console.error('No token found in local storage');
                     return;
                 }
-                
-                const response = await axios.get('http://localhost:8000/api/v1/rides/ride-history', {
+                const response = await axios.get(`${process.env.REMOTE_URL}/api/v1/rides/ride-history`, {
                     headers: { Authorization: `Bearer ${token}` } // Send token in Authorization header
                 });
                 console.log('Response Data:', response.data); // Debug log
@@ -23,7 +22,7 @@ const RideHistory = () => {
                 console.error('Error fetching ride history:', error); // Debug log
             }
         };
-        
+
 
         fetchRides();
     }, []);

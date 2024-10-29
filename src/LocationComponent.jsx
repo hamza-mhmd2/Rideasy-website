@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'; // Import Marker here
 
-const socket = io('http://localhost:8000'); // Replace with your backend URL
+const socket = io(process.env.REMOTE_URL); // Replace with your backend URL
 
 function LocationComponent({ userType = 'driver' }) {
     const [location, setLocation] = useState({ latitude: null, longitude: null });

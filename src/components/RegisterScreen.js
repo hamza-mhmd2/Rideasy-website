@@ -83,7 +83,7 @@ const RegisterScreen = () => {
   const signup = async () => {
     try {
       console.log(`signup : user data : ${JSON.stringify(userData)} `)
-      const response = await axios.post("http://localhost:8000/api/v1/auth/register", userData);
+      const response = await axios.post(`${process.env.REMOTE_URL}/api/v1/auth/register`, userData);
       console.log('Signup response:', response.data);
     } catch (error) {
       console.error('Signup error:', error);
@@ -91,8 +91,9 @@ const RegisterScreen = () => {
   };
 
   const signupwithgoogle = () => {
-    window.open("http://localhost:8000/auth/google/callback", "_self")
+    window.open(`${process.env.REMOTE_URL}/auth/google/callback`, "_self")
   }
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-orange-600 px-4 md:px-8 lg:px-16">
       <div className="w-full max-w-md md:max-w-lg lg:max-w-xl  rounded-lg shadow-lg p-8 space-y-6">

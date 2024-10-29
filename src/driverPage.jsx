@@ -14,7 +14,7 @@ const DriverApp = () => {
   useEffect(() => {
     const fetchRideHistory = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/v1/rides/ride-history`, {
+        const response = await axios.get(`${process.env.REMOTE_URL}/api/v1/rides/ride-history`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setRides(response.data);
@@ -53,7 +53,7 @@ const DriverApp = () => {
   const handleEndRide = async () => {
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/v1/rides/end/${selectedRide._id}`,
+        `${process.env.REMOTE_URL}/api/v1/rides/end/${selectedRide._id}`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }

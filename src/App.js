@@ -11,9 +11,10 @@ import DriverInbox from './DriverInbox';
 import PassengerApp from './PassengerApp';
 import PassengerInbox from './PassengerInbox';
 import { io } from "socket.io-client";
+
 function App() {
   const [splashVisible, setSplashVisible] = useState(true);
-  const socket = io("http://localhost:8000"); // Connect to the WebSocket server
+  const socket = io(process.env.REMOTE_URL); // Connect to the WebSocket server
 
   const handleSplashEnd = () => {
     setSplashVisible(false);
