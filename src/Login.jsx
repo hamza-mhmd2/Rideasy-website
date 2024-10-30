@@ -22,7 +22,7 @@ function Login() {
     e.preventDefault();
     try {
       console.log(`Login:handleSubmit: formData : ${JSON.stringify(formData)}`)
-      const response = await axios.post("https://rideeasy-backend.vercel.app/api/v1/auth/login", formData);
+      const response = await axios.post(`${process.env.REACT_APP_REMOTE_URL}/api/v1/auth/login`, formData);
       console.log('Login response:', response.data);
 
       // Store the JWT token and user information in local storage
@@ -37,11 +37,13 @@ function Login() {
       } else if (response.data.user.role === 'passenger') {
         navigate('/passenger-app');
       } else {
-        console.error('Unknown role:', response.data.user.role);
+        alert('Unknown role:', response.data.user.role);
         // Optionally handle unknown roles, e.g., navigate to an error page
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.log(`Login error: ${JSON.stringify(error)}`);
+      if (error.status === 404) alert('Failed to connect with server')
+      if (error.status === 400) alert('Some fields have invalid input')
     }
   };
 

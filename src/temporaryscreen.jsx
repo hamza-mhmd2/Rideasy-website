@@ -27,7 +27,7 @@ const BookingGoogleMap = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [driverLocations, setDriverLocations] = useState({});
   const navigate = useNavigate();
-  const socket = io(process.env.REMOTE_URL); //Web socket connection
+  const socket = io(process.env.REACT_APP_REMOTE_URL); //Web socket connection
 
   useEffect(() => {
     // Listen for driver's location updates
@@ -169,7 +169,7 @@ const BookingGoogleMap = () => {
         setShowResults(true);
 
         try {
-          const response = await fetch(`${process.env.REMOTE_URL}/api/v1/rides/create`, {
+          const response = await fetch(`${process.env.REACT_APP_REMOTE_URL}/api/v1/rides/create`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -215,7 +215,7 @@ const BookingGoogleMap = () => {
     setShowDriversPopup(false);
 
     try {
-      const response = await fetch(`${process.env.REMOTE_URL}/api/v1/auth/drivers/${driverId}`);
+      const response = await fetch(`${process.env.REACT_APP_REMOTE_URL}/api/v1/auth/drivers/${driverId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

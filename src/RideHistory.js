@@ -14,12 +14,14 @@ const RideHistory = () => {
                     console.error('No token found in local storage');
                     return;
                 }
-                const response = await axios.get(`${process.env.REMOTE_URL}/api/v1/rides/ride-history`, {
+                const response = await axios.get(`${process.env.REACT_APP_REMOTE_URL}/api/v1/rides/ride-history`, {
                     headers: { Authorization: `Bearer ${token}` } // Send token in Authorization header
                 });
                 console.log('Response Data:', response.data); // Debug log
             } catch (error) {
-                console.error('Error fetching ride history:', error); // Debug log
+                console.log('Error fetching ride history:', error); 
+                if (error.status === 404) alert('Failed to connect with server')
+                if (error.status === 400) alert('Some fields have invalid input')
             }
         };
 

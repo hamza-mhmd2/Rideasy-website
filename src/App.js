@@ -14,7 +14,7 @@ import { io } from "socket.io-client";
 
 function App() {
   const [splashVisible, setSplashVisible] = useState(true);
-  const socket = io(process.env.REMOTE_URL); // Connect to the WebSocket server
+  const socket = io(process.env.REACT_APP_REMOTE_URL); // Connect to the WebSocket server
 
   const handleSplashEnd = () => {
     setSplashVisible(false);

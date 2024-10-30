@@ -14,12 +14,14 @@ const DriverApp = () => {
   useEffect(() => {
     const fetchRideHistory = async () => {
       try {
-        const response = await axios.get(`${process.env.REMOTE_URL}/api/v1/rides/ride-history`, {
+        const response = await axios.get(`${process.env.REACT_APP_REMOTE_URL}/api/v1/rides/ride-history`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setRides(response.data);
       } catch (error) {
         console.error('Error fetching ride history:', error);
+        if (error.status === 404) alert('Failed to connect with server')
+        if (error.status === 400) alert('Some fields have invalid input')
       }
     };
     fetchRideHistory();
@@ -53,7 +55,7 @@ const DriverApp = () => {
   const handleEndRide = async () => {
     try {
       const response = await axios.put(
-        `${process.env.REMOTE_URL}/api/v1/rides/end/${selectedRide._id}`,
+        `${process.env.REACT_APP_REMOTE_URL}/api/v1/rides/end/${selectedRide._id}`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -62,7 +64,7 @@ const DriverApp = () => {
       alert('Ride ended successfully');
       closeModal();
     } catch (error) {
-      console.error('Error ending the ride:', error);
+      console.log('Error ending the ride:', error);
       alert('Failed to end the ride');
     }
   };
@@ -81,19 +83,19 @@ const DriverApp = () => {
       <div className="w-full max-w-6xl bg-white shadow-md rounded-lg p-4">
         <h3 className="text-xl font-semibold mb-4">Your Rides</h3>
         <ul className="space-y-2">
-        {Array.isArray(rides) && rides
-  .sort((a, b) => new Date(b.departureTime) - new Date(a.departureTime))
-  .map((ride) => (
-    <li key={ride._id} className="flex justify-between items-center border-b pb-2">
-      <span>{ride.origin.address} - {new Date(ride.departureTime).toLocaleString()}</span>
-      <button
-        onClick={() => handleSeeDetails(ride)}
-        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-      >
-        See Details
-      </button>
-    </li>
-  ))}
+          {Array.isArray(rides) && rides
+            .sort((a, b) => new Date(b.departureTime) - new Date(a.departureTime))
+            .map((ride) => (
+              <li key={ride._id} className="flex justify-between items-center border-b pb-2">
+                <span>{ride.origin.address} - {new Date(ride.departureTime).toLocaleString()}</span>
+                <button
+                  onClick={() => handleSeeDetails(ride)}
+                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                >
+                  See Details
+                </button>
+              </li>
+            ))}
 
         </ul>
       </div>

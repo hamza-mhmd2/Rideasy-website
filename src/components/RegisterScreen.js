@@ -6,13 +6,12 @@ import axios from 'axios';
 
 const RegisterScreen = () => {
   const navigate = useNavigate();
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState("passenger");
   const [userData, setUserData] = useState({
     fullName: "",
     email: "",
-    password: "",
+    password: '',
     phone: "",
     role: "passenger",
     vehicle: {
@@ -80,20 +79,23 @@ const RegisterScreen = () => {
       });
     }
   };
+
   const signup = async () => {
     try {
       console.log(`signup : user data : ${JSON.stringify(userData)} `)
-      const response = await axios.post(`${process.env.REMOTE_URL}/api/v1/auth/register`, userData);
+      const response = await axios.post(`${process.env.REACT_APP_REMOTE_URL}/api/v1/auth/register`, userData);
       console.log('Signup response:', response.data);
+      alert('user registered successfuly')
     } catch (error) {
-      console.error('Signup error:', error);
+      console.log(`Signup error: ${JSON.stringify(error)}`);
+      if (error.status === 404) alert('Failed to connect with server')
+      if (error.status === 400) alert('Some fields have invalid input')
     }
   };
 
   const signupwithgoogle = () => {
-    window.open(`${process.env.REMOTE_URL}/auth/google/callback`, "_self")
+    window.open(`${process.env.REACT_APP_REMOTE_URL}/auth/google/callback`, "_self")
   }
-  
   return (
     <div className="flex items-center justify-center min-h-screen bg-orange-600 px-4 md:px-8 lg:px-16">
       <div className="w-full max-w-md md:max-w-lg lg:max-w-xl  rounded-lg shadow-lg p-8 space-y-6">
@@ -146,11 +148,12 @@ const RegisterScreen = () => {
           <div className="flex items-center bg-white rounded-full px-4 py-3 relative">
             <FaLock className="text-gray-600 mr-3" />
             <input
+              name='password'
               type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               className="bg-transparent flex-1 focus:outline-none"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={userData.password}
+              onChange={handleChange}
             />
             <button onClick={togglePasswordVisibility} className="absolute right-4">
               {showPassword ? <FaEyeSlash className="text-gray-600" /> : <FaEye className="text-gray-600" />}
