@@ -1,0 +1,38 @@
+Login error: {
+    "message": "Request failed with status code 400",
+    "name": "AxiosError",
+    "stack": "AxiosError: Request failed with status code 400\n    at settle (http://localhost:3000/static/js/bundle.js:65642:12)\n    at XMLHttpRequest.onloadend (http://localhost:3000/static/js/bundle.js:64293:66)\n    at Axios.request (http://localhost:3000/static/js/bundle.js:64792:41)\n    at async handleSubmit (http://localhost:3000/main.f9ea0d3f5b7a22bbe6df.hot-update.js:49:24)",
+    "config": {
+        "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+        },
+        "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+        ],
+        "transformRequest": [
+            null
+        ],
+        "transformResponse": [
+            null
+        ],
+        "timeout": 0,
+        "xsrfCookieName": "XSRF-TOKEN",
+        "xsrfHeaderName": "X-XSRF-TOKEN",
+        "maxContentLength": -1,
+        "maxBodyLength": -1,
+        "env": {},
+        "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json"
+        },
+        "method": "post",
+        "url": "https://rideeasy-backend.vercel.app/api/v1/auth/login",
+        "data": "{\"email\":\"abc@gmail.com\",\"password\":\"abc123\"}"
+    },
+    "code": "ERR_BAD_REQUEST",
+    "status": 400
+}

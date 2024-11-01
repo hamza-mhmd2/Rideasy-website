@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [formData, setFormData] = useState({
-    email: "",
-    password: ""
+    email: '',
+    password: ''
   });
 
   const navigate = useNavigate();
@@ -36,11 +36,13 @@ function Login() {
       } else if (response.data.user.role === 'passenger') {
         navigate('/passenger-app');
       } else {
-        console.error('Unknown role:', response.data.user.role);
+        alert('Unknown role:', response.data.user.role);
         // Optionally handle unknown roles, e.g., navigate to an error page
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.log(`Login error: ${JSON.stringify(error)}`);
+      if (error.status === 404) alert('Failed to connect with server')
+      if (error.status === 400) alert('Some fields have invalid input')
     }
   };
 

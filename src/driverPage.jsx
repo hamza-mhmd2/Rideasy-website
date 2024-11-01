@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
 import { io } from "socket.io-client";
+
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
@@ -28,6 +30,7 @@ const DriverApp = () => {
     navigator.geolocation.watchPosition(
       (position) => {
         const locationData = {
+          driverId: localStorage.getItem('id'),
           driverId: localStorage.getItem('id'),
           lat: position.coords.latitude,
           lng: position.coords.longitude

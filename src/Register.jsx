@@ -41,10 +41,10 @@ function Register() {
 
   const signup = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/auth/register`, userData);
+      const response = await axios.post(`${process.env.REACT_APP_REMOTE_URL}/api/v1/auth/register`, userData);
       console.log('Signup response:', response.data);
     } catch (error) {
-      console.error('Signup error:', error);
+      alert(`Signup error: ${error}`);
     }
   };
 

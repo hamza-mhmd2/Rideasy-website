@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SplashScreen from './components/splashScreen';
 import WelcomeScreen from './components/WelcomeScreen';
@@ -15,10 +15,18 @@ import ChatRoom from './ChatRoom';
 
 function App() {
   const [splashVisible, setSplashVisible] = useState(true);
+  const socket = io(process.env.REACT_APP_REMOTE_URL); // Connect to the WebSocket server
 
   const handleSplashEnd = () => {
     setSplashVisible(false);
   };
+
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log(`connected to server | socket id : ${socket.id}`);
+    })
+  }, [])
 
   return (
     <div className="App">
