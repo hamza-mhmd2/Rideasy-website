@@ -12,6 +12,7 @@ import PassengerApp from './PassengerApp';
 import PassengerInbox from './PassengerInbox';
 import RideHistory from './RideHistory';
 import ChatRoom from './ChatRoom';
+import { io } from "socket.io-client";
 
 function App() {
   const [splashVisible, setSplashVisible] = useState(true);
