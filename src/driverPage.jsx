@@ -3,8 +3,7 @@ import { io } from "socket.io-client";
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL;
-const socket = io(backendUrl);  // Use the backendUrl for WebSocket connection
+const socket = io(process.env.REACT_APP_BACKEND_HOST);  // Use the backendUrl for WebSocket connection
 
 const DriverApp = () => {
   const [rides, setRides] = useState([]);
@@ -14,7 +13,7 @@ const DriverApp = () => {
   useEffect(() => {
     const fetchRideHistory = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/v1/rides/ride-history`, {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/rides/ride-history`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setRides(response.data);
@@ -53,7 +52,7 @@ const DriverApp = () => {
   const handleEndRide = async () => {
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/v1/rides/end/${selectedRide._id}`,
+        `${process.env.REACT_APP_BACKEND_HOST}/api/v1/rides/end/${selectedRide._id}`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }

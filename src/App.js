@@ -10,6 +10,8 @@ import DriverApp from './driverPage';
 import DriverInbox from './DriverInbox';
 import PassengerApp from './PassengerApp';
 import PassengerInbox from './PassengerInbox';
+import RideHistory from './RideHistory';
+import ChatRoom from './ChatRoom';
 
 function App() {
   const [splashVisible, setSplashVisible] = useState(true);
@@ -50,6 +52,8 @@ function App() {
             <Route path="/passenger/inbox" element={<PassengerInbox />} />
             <Route path="/driver/rides" element={<DriverApp />} /> {/* Add driver rides page here */}
             <Route path="/passenger/rides" element={<PassengerApp />} /> {/* Add passenger rides page here */}
+            <Route path="/ride-details" element={<RideHistory />} /> {/* Add passenger rides page here */}
+            <Route path="/chat/:rideId" element={<ChatRoom />} />
           </Routes>
         </Router>
       )}

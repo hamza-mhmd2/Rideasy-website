@@ -8,7 +8,7 @@ const DriversPopup = ({ onClose, onBookDriver, driverLocations }) => {
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/auth/drivers');
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/auth/drivers`);
         if (!response.ok) {
           throw new Error('Failed to fetch drivers');
         }

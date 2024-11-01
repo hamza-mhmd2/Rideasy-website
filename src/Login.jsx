@@ -21,7 +21,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/v1/auth/login", formData);
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/auth/login`, formData);
       console.log('Login response:', response.data);
 
       // Store the JWT token and user information in local storage
