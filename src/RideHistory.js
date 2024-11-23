@@ -17,7 +17,7 @@ const RideHistory = () => {
           return;
         }
 
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/rides/ride-history`, {
+        const response = await axios.get(`${process.env.REACT_APP_REMOTE_URL}/api/v1/rides/ride-history`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

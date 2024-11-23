@@ -28,7 +28,7 @@ const BookingGoogleMap = () => {
   const [driverLocations, setDriverLocations] = useState({});
   const navigate = useNavigate();
   const [driversList, setDriversList] = useState([]);
-  const socket = io(`${process.env.REACT_APP_BACKEND_HOST}`); // Connect to the WebSocket server
+  const socket = io(`${process.env.REACT_APP_REMOTE_URL}`); // Connect to the WebSocket server
 
   useEffect(() => {
     // Listen for driver's location updates
@@ -183,7 +183,7 @@ const BookingGoogleMap = () => {
         setShowResults(true);
 
         try {
-          const response = await fetch(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/rides/create`, {
+          const response = await fetch(`${process.env.REACT_APP_REMOTE_URL}/api/v1/rides/create`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -229,7 +229,7 @@ const BookingGoogleMap = () => {
     setShowDriversPopup(false);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/auth/drivers/${driverId}`);
+      const response = await fetch(`${process.env.REACT_APP_REMOTE_URL}/api/v1/auth/drivers/${driverId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -267,7 +267,7 @@ const BookingGoogleMap = () => {
       setShowDriversPopup(true);
       
       // Fetch all drivers from the backend
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/auth/drivers`);
+      const response = await fetch(`${process.env.REACT_APP_REMOTE_URL}/api/v1/auth/drivers`);
       if (!response.ok) {
         throw new Error('Failed to fetch drivers');
       }

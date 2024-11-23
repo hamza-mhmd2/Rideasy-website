@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import { useParams, useLocation } from 'react-router-dom';
 
-const socket = io(process.env.REACT_APP_BACKEND_HOST);
+const socket = io(process.env.REACT_APP_REMOTE_URL);
 
 const ChatRoom = () => {
   const { rideId } = useParams();
@@ -28,7 +28,7 @@ const ChatRoom = () => {
     // Load previous chat messages
     const loadChatMessages = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/chat/messages/${rideId}`);
+        const response = await axios.get(`${process.env.REACT_APP_REMOTE_URL}/api/v1/chat/messages/${rideId}`);
         setMessages(response.data);
       } catch (error) {
         console.error('Failed to load chat messages:', error);
@@ -52,7 +52,7 @@ const ChatRoom = () => {
       };
     console.log(newMessage);
       try {
-        await axios.post(`${process.env.REACT_APP_BACKEND_HOST}/api/v1/chat/message`, newMessage);
+        await axios.post(`${process.env.REACT_APP_REMOTE_URL}/api/v1/chat/message`, newMessage);
         setMessage('');
       } catch (error) {
         console.error('Failed to send message:', error);
