@@ -31,7 +31,6 @@ const DriverApp = () => {
       (position) => {
         const locationData = {
           driverId: localStorage.getItem('id'),
-          driverId: localStorage.getItem('id'),
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };

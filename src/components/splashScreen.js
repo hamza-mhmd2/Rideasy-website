@@ -12,7 +12,7 @@ const SplashScreen = ({ onSplashEnd }) => {
   return (
     <div className="flex items-center justify-center h-screen bg-white">
       <div className="text-center">
-      <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-gray-800 tracking-tight leading-tight">
+      <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-gray-800 tracking-tight leading-tight">
   Welcome to,
 </h1>
 
